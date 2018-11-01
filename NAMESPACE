@@ -1,0 +1,19 @@
+exportPattern("^[[:alpha:]]+")
+
+import(openxlsx, xtable, knitr, ggplot2, reshape2)
+
+importFrom("methods", "is", "as")
+importFrom("stats", "IQR", "as.formula", "quantile", "sd", "fivenum")
+
+importFrom("plyr", ".", "join_all", "is.formula")
+importFrom("dplyr", "%>%", "filter_", 'group_by_')
+
+importFrom("DBI", "dbConnect", "dbDisconnect", "dbSendQuery", "dbGetQuery", "dbWriteTable")
+importFrom("RMariaDB", "MariaDB", "dbBegin", "dbCommit")
+
+importFrom("utils", "write.csv")
+
+# For a function to be usable outside of your package, you must export it.
+# By default roxygen2 doesn’t export anything from your package.
+# If you want an object to be publically available, you must explicitly tag it with @export.
+export(export.query)
