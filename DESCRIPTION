@@ -1,14 +1,20 @@
 Package: KHanSUtils
 Type: Package
 Title: A Collection of Wrappers for Frequently Used Codes
-Version: 0.1.13-970517
-Date: 2017-12-23-961012
+Version: 0.2.01-970812
+Date: 2018-11-03-970812
 Author: Keyhan Sedaghat <keyhansedaghat@netscape.net>
 Maintainer: Keyhan Sedaghat <keyhansedaghat@netscape.net>
 Description: A series of files containing everyday-used methods and data structures.
 Encoding: UTF-8
-License: GPL-3
-RoxygenNote: 6.0.1
+License: file LICENSE
+RoxygenNote: 6.1.0
 Depends: R(>= 3.4.0)
 LazyData: true
-Imports: openxlsx, xtable, knitr, ggplot2, reshape2, methods, plyr, dplyr, DBI, RMySQL, RMariaDB
+Imports: 
+    data.table (>= 1.11.8), 
+    ggplot2 (>= 3.0.0),
+    dplyr (>= 0.7.6),
+    stats, 
+    utils,
+    methods
