@@ -12,6 +12,9 @@ KH.changeDecimal(DT, columns = c())
 
 \item{columns}{string|number. Columns' names or numbers in the data to change.}
 }
+\value{
+DT data.table. All the decimal points in the given columns are replaced with Persian equivalent.
+}
 \description{
 Format numbers in the table so they are correct in Persian.
 }
@@ -27,6 +30,8 @@ KH.changeDecimal(12.3)
 #[1] "12٫3"
 KH.changeDecimal('a.23')
 #[1] "a.23"
+KH.changeDecimal(c(1.23, 0.02))
+#[1] "1٫23" "0٫02"
 
 columns <- c('dep_x','arr_x')
 input_file <- system.file("extdata", "input_file.csv", package = "KHanSUtils")
@@ -34,27 +39,37 @@ DT <- KH.loadCSV(input_file)
 
 DT[, c('dep_x','arr_x') := list(dep_delay/10, arr_delay/10)]
 DT
-#   dep_delay arr_delay carrier origin dest air_time distance hour dep_x arr_x
-#1:        14        13      AA    JFK  LAX      359     2475    9   1.4   1.3
-#2:        -3        13      AA    JFK  LAX      363     2475   11  -0.3   1.3
-#3:         2         9      AA    JFK  LAX      351     2475   19   0.2   0.9
-#4:        -8       -26      AA    LGA  PBI      157     1035    7  -0.8  -2.6
-#5:         2         1      AA    JFK  LAX      350     2475   13   0.2   0.1
-#6:         4         0      AA    EWR  LAX      339     2454   18   0.4   0.0
+#    year month day dep_delay arr_delay carrier origin dest air_time distance hour dep_x arr_x
+# 1: 2014     1   1        14        13      AA    JFK  LAX      359     2475    9   1.4   1.3
+# 2: 2014    10  31         1       -30      UA    LGA  IAH      201     1416   14   0.1  -3.0
+# 3: 2014     1   1        -3        13      AA    JFK  LAX      363     2475   11  -0.3   1.3
+# 4: 2014    10  31        -5       -14      UA    EWR  IAH      189     1400    8  -0.5  -1.4
+# 5: 2014     1   1         2         9      AA    JFK  LAX      351     2475   19   0.2   0.9
+# 6: 2014    10  31        -8        16      MQ    LGA  RDU       83      431   11  -0.8   1.6
+# 7: 2014     1   1        -8       -26      AA    LGA  PBI      157     1035    7  -0.8  -2.6
+# 8: 2014    10  31        -4        15      MQ    LGA  DTW       75      502   11  -0.4   1.5
+# 9: 2014     1   1         2         1      AA    JFK  LAX      350     2475   13   0.2   0.1
+#10: 2014    10  31        -5         1      MQ    LGA  SDF      110      659    8  -0.5   0.1
+#11: 2014     1   1         4         0      AA    EWR  LAX      339     2454   18   0.4   0.0
 
 KH.changeDecimal(DT, columns)
-#   dep_delay arr_delay carrier origin dest air_time distance hour dep_x arr_x
-#1:        14        13      AA    JFK  LAX      359     2475    9   1٫4   1٫3
-#2:        -3        13      AA    JFK  LAX      363     2475   11  -0.3   1٫3
-#3:         2         9      AA    JFK  LAX      351     2475   19   0٫2   0٫9
-#4:        -8       -26      AA    LGA  PBI      157     1035    7  -0.8  -2.6
-#5:         2         1      AA    JFK  LAX      350     2475   13   0٫2   0٫1
-#6:         4         0      AA    EWR  LAX      339     2454   18   0٫4     0
+#    year month day dep_delay arr_delay carrier origin dest air_time distance hour dep_x arr_x
+# 1: 2014     1   1        14        13      AA    JFK  LAX      359     2475    9   1٫4   1٫3
+# 2: 2014    10  31         1       -30      UA    LGA  IAH      201     1416   14   0٫1    -3
+# 3: 2014     1   1        -3        13      AA    JFK  LAX      363     2475   11  -0.3   1٫3
+# 4: 2014    10  31        -5       -14      UA    EWR  IAH      189     1400    8  -0.5  -1.4
+# 5: 2014     1   1         2         9      AA    JFK  LAX      351     2475   19   0٫2   0٫9
+# 6: 2014    10  31        -8        16      MQ    LGA  RDU       83      431   11  -0.8   1٫6
+# 7: 2014     1   1        -8       -26      AA    LGA  PBI      157     1035    7  -0.8  -2.6
+# 8: 2014    10  31        -4        15      MQ    LGA  DTW       75      502   11  -0.4   1٫5
+# 9: 2014     1   1         2         1      AA    JFK  LAX      350     2475   13   0٫2   0٫1
+#10: 2014    10  31        -5         1      MQ    LGA  SDF      110      659    8  -0.5   0٫1
+#11: 2014     1   1         4         0      AA    EWR  LAX      339     2454   18   0٫4     0
 }
 }
 \seealso{
-Other Utils: \code{\link{KH.get}}, \code{\link{KH.ifNull}},
-  \code{\link{KH.set}}
+Other Utils: \code{\link{KH.ifNull}},
+  \code{\link{KH.roundAll}}
 }
 \concept{Utils}
 \keyword{internals}

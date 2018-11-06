@@ -30,6 +30,6 @@ KH.ifNull('defaultFont', 'B Nazanin')
 }
 \seealso{
 Other Utils: \code{\link{KH.changeDecimal}},
-  \code{\link{KH.get}}, \code{\link{KH.set}}
+  \code{\link{KH.roundAll}}
 }
 \concept{Utils}

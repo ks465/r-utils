@@ -4,7 +4,7 @@
 
 
 #' Load data from a CSV file into `data.table`
-#' @family DataLoaders
+#' @family DataSets
 #' @details
 #' Use only data of \code{data.table} type. Many functions of this package work with this type of data only.
 #' @param csv_filename string. Full URL to the CSV file.
@@ -45,3 +45,76 @@ KH.loadCSV <- function(csv_filename, key=NULL, index=NULL, colClasses=NULL){
     return(DT)
 }
 
+
+#' Drop column or columns from a data.table by using the names.
+#' @family DataSets
+#' @param DT data.table Two dimension data object which \code{colnames(x)} is meaningful.
+#' @param currentTitles character. Vector of current column names.
+#' @return data.table. The same object as input with columns removed.
+#' @importFrom data.table is.data.table
+#' @export
+#' @examples
+#' set.seed(1000)
+#' library(data.table)
+#' d <- data.table(
+#' group = sample(LETTERS[1:3], 10, replace = TRUE),
+#' integer = rnorm(10, 5, 1),
+#' integer1 = rnorm(10, 5, 1),
+#' integer2 = rnorm(10, 5, 1),
+#' decimal = rnorm(10, 5, 1)
+#' )
+#' colnames(d)
+#' #[1] "group" "integer" "integer1" "integer2" "decimal"
+#' d <- KH.dropColsByName(d, 'integer')
+#' colnames(d)
+#' #[1] "group" "integer1" "integer2" "decimal"
+#'
+#' d <- KH.dropColsByName(d, c('integer1', 'integer2'))
+#' colnames(d)
+#' #[1] "group" "decimal"
+KH.dropColsByName <- function(DT, currentTitles){
+    stopifnot(is.data.table(DT))
+
+    return(DT[,!..currentTitles])
+}
+
+
+#' Change name of columns in a data set
+#' @family DataSets
+#' @param DT data.table. Two dimension data object which \code{colnames(x)} is meaningful.
+#' @param currentTitles character. Vector of current column names.
+#' @param newTitles character. Vector of new names after renaming.
+#' @importFrom data.table is.data.table
+#' @export
+#' @return data.table. The same data object as input with name of columns changed.
+#' @examples {
+#' set.seed(1000)
+#' library(data.table)
+#' d <- data.table(
+#' group = sample(LETTERS[1:3], 10, replace = TRUE),
+#' integer = rnorm(10, 5, 1),
+#' decimal = rnorm(10, 5, 1)
+#' )
+#' colnames(d)
+#' #[1] "group" "integer" "decimal"
+#' d <- KH.changeColName(d, 'integer', 'zeroPrecision')
+#' colnames(d)
+#' #[1] "group" "zeroPrecision" "decimal"
+#' d <- KH.changeColName(d, c('group', 'decimal'), c('newGroup', 'float'))
+#' colnames(d)
+#' #[1] "newGroup" "zeroPrecision" "float"
+#' }
+KH.changeColName <- function(DT, currentTitles, newTitles){
+    stopifnot(is.data.table(DT))
+    stopifnot(length(currentTitles) == length(newTitles))
+
+    columns <- colnames(DT)
+
+    for(i in 1:length(currentTitles)){
+        id <- grep(currentTitles[i], columns, fixed = TRUE)
+        columns[id] <- newTitles[i]
+    }
+    colnames(DT) <- columns
+
+    return(DT)
+}

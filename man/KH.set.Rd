@@ -37,8 +37,8 @@ KH.set('hello', function(){print('hello')})
 }
 }
 \seealso{
-Other Utils: \code{\link{KH.changeDecimal}},
-  \code{\link{KH.get}}, \code{\link{KH.ifNull}}
+Other Config: \code{\link{Configuration}},
+  \code{\link{KH.get}}
 }
-\concept{Utils}
+\concept{Config}
 \keyword{internals}

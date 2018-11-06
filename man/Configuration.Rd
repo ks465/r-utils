@@ -57,4 +57,7 @@ Default database password to use in SQL queries. It has no default value.
 }
 }
 
+\seealso{
+Other Config: \code{\link{KH.get}}, \code{\link{KH.set}}
+}
 \concept{Config}

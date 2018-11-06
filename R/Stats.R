@@ -236,13 +236,12 @@ KH.quant.75 <- function(x, decimal = KH.get(variable = 'decimal', default = 1), 
 #' @import data.table
 #' @examples {
 #' set.seed(100)
+#' library(data.table)
 #' df <- data.table(
 #'    x = rnorm(20),
 #'    y = sample(LETTERS[1:3], 20, replace = TRUE)
 #' )
 #' x=KH.nineNumbers.by(df, 'x', 'y')
-#' z=KH.nineNumbers.total(df, 'x')
-#' y=KH.nineNumbers.table(df, 'x', 'y')
 #' }
 KH.nineNumbers.by <- function(DT, x, groupBy, titles = NULL, decimal = 'default', order = NULL) {
     stopifnot(is.data.table(DT))
@@ -276,15 +275,15 @@ KH.nineNumbers.by <- function(DT, x, groupBy, titles = NULL, decimal = 'default'
 #' @param decimal integer. Set precision for vectors in resultant quantile. Default is \code{decimal} in package.
 #' @param rowname string. A title for the row. This is handy for attaching the output to the table from \code{KH.nineNumbers.by}.
 #' @import data.table
+#' @export
 #' @examples {
 #' set.seed(100)
+#' library(data.table)
 #' df <- data.table(
 #'    x = rnorm(20),
 #'    y = sample(LETTERS[1:3], 20, replace = TRUE)
 #' )
-#' x=KH.nineNumbers.by(df, 'x', 'y')
 #' z=KH.nineNumbers.total(df, 'x')
-#' y=KH.nineNumbers.table(df, 'x', 'y')
 #' }
 KH.nineNumbers.total <- function(DT, x, titles = NULL, decimal = 'default', rowname = NULL) {
     stopifnot(is.data.table(DT))
@@ -294,15 +293,16 @@ KH.nineNumbers.total <- function(DT, x, titles = NULL, decimal = 'default', rown
     }
 
     DT[, .(
+        y = 'Total',
         count = .N,
-        mean = lapply(.SD, mean),
-        sd = lapply(.SD, sd),
         min = lapply(.SD, min),
         quartile1st = lapply(.SD, KH.quant.25),
         median = lapply(.SD, KH.median),
         quartile3st = lapply(.SD, KH.quant.75),
         max = lapply(.SD, max),
-        IQR = lapply(.SD, IQR)
+        IQR = lapply(.SD, IQR),
+        mean = lapply(.SD, mean),
+        sd = lapply(.SD, sd)
     ), .SDcols = x]
 }
 #' Produce complete table of nine-numbers grouped by a given column in the data plus a total row.
@@ -319,14 +319,14 @@ KH.nineNumbers.total <- function(DT, x, titles = NULL, decimal = 'default', rown
 #' @param decimal integer. Set precision for vectors in resultant quantile. Default is \code{decimal} in package.
 #' @param order string. Not implemented yet. Sort order of columns.
 #' @import data.table
+#' @export
 #' @examples {
 #' set.seed(100)
+#' library(data.table)
 #' df <- data.table(
 #'    x = rnorm(20),
 #'    y = sample(LETTERS[1:3], 20, replace = TRUE)
 #' )
-#' x=KH.nineNumbers.by(df, 'x', 'y')
-#' z=KH.nineNumbers.total(df, 'x')
 #' y=KH.nineNumbers.table(df, 'x', 'y')
 #' }
 KH.nineNumbers.table <- function(DT, x, groupBy, titles = NULL, rowname = NULL, decimal = 'default', order = 'default') {

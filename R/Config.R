@@ -98,7 +98,7 @@ KH.config <- KHanConfig$new()
 #' @details
 #' Critical package-wide variables are saved in a module environment.
 #' This function reads a given variable from this environment only.
-#' @family Utils
+#' @family Config
 #' @keywords internals
 #' @param variable String. Name of the variable to search for.
 #' @param default Mixed. Default value if the object is not present, defaults to \code{NULL}.
@@ -126,7 +126,7 @@ KH.get <- function(variable, default = NULL){
 #'
 #' @details
 #' In order to change a default value or function definition, set the value using this method.
-#' @family Utils
+#' @family Config
 #' @note Use this only to redefine a variable. It could not be used to create a variable or function.
 #' @keywords internals
 #' @param variable String. Name of the variable or function to change.

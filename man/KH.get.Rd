@@ -32,8 +32,8 @@ KH.get('defaultFont')
 # "B Nazanin"
 }
 \seealso{
-Other Utils: \code{\link{KH.changeDecimal}},
-  \code{\link{KH.ifNull}}, \code{\link{KH.set}}
+Other Config: \code{\link{Configuration}},
+  \code{\link{KH.set}}
 }
-\concept{Utils}
+\concept{Config}
 \keyword{internals}

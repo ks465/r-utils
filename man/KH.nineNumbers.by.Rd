@@ -31,13 +31,12 @@ of a data vector. This function creates a row for each grouped item.
 \examples{
 {
 set.seed(100)
+library(data.table)
 df <- data.table(
    x = rnorm(20),
    y = sample(LETTERS[1:3], 20, replace = TRUE)
 )
 x=KH.nineNumbers.by(df, 'x', 'y')
-z=KH.nineNumbers.total(df, 'x')
-y=KH.nineNumbers.table(df, 'x', 'y')
 }
 }
 \seealso{

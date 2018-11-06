@@ -41,4 +41,8 @@ KH.loadCSV(input_file)
 #6: 2014  TRUE TRUE         4         0      AA    EWR  LAX      339     2454   18
 }
 }
-\concept{DataLoaders}
+\seealso{
+Other DataSets: \code{\link{KH.changeColName}},
+  \code{\link{KH.dropColsByName}}
+}
+\concept{DataSets}
