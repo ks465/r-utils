@@ -4,24 +4,38 @@
 \alias{KH.depart}
 \title{Separate data set into separated output for each department}
 \usage{
-KH.depart(DT, departmentColumn, outputDir, writeUnivToo = TRUE,
-  create.dir = FALSE, output.format = "xlsx", ...)
+KH.depart(DT, departingColumn, outputDir, writeWholeToo = TRUE,
+  output.format = "csv", ...)
 }
 \arguments{
-\item{DT}{data.table}
+\item{DT}{data.table. Data object containing multiple rows and columns.}
 
-\item{departmentColumn}{character}
+\item{departingColumn}{string A single value which name of one of the columns in the data set.
+This will be used to separate data.}
 
-\item{outputDir}{string}
+\item{outputDir}{string. Path to a directory to save the output. If it does not exist, it will be created.
+Data inside the directory will be overwritten without notice.}
 
-\item{writeUnivToo}{logical}
+\item{writeWholeToo}{logical. If TRUE write whole data set into a file alongside the separated files.
+Default is TRUE.}
 
-\item{create.dir}{logical}
-
-\item{output.format}{character}
+\item{output.format}{string. Format of the output files. Default is CSV.}
 
 \item{...}{Dots. This is usually \code{...}, although other types are accepted.}
 }
 \description{
 Separate data set into separated output for each department
+}
+\details{
+After separating data based on the given column, each part is written to a separate file
+in the given directory. If the directory does not exist, it will be created. If the directory exists
+and contains data, they will be overwritten without notice.
+}
+\examples{
+{
+input_file <- system.file("extdata", "input_file.csv", package = "KHanSUtils")
+DT <- KH.loadCSV(input_file)
+KH.depart(DT, 'origin', '/tmp/xXx')
+
+}
 }

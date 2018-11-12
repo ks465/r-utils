@@ -326,22 +326,103 @@ KH.roundAll <- function(DT, integerList = NULL, decimalList = NULL, decimal = KH
 
 
 #' Separate data set into separated output for each department
-#' @param DT data.table
-#' @param departmentColumn character
-#' @param outputDir string
-#' @param writeUnivToo logical
-#' @param create.dir logical
-#' @param output.format character
+#' @details After separating data based on the given column, each part is written to a separate file
+#' in the given directory. If the directory does not exist, it will be created. If the directory exists
+#' and contains data, they will be overwritten without notice.
+#' @param DT data.table. Data object containing multiple rows and columns.
+#' @param departingColumn string A single value which name of one of the columns in the data set.
+#' This will be used to separate data.
+#' @param outputDir string. Path to a directory to save the output. If it does not exist, it will be created.
+#' Data inside the directory will be overwritten without notice.
+#' @param writeWholeToo logical. If TRUE write whole data set into a file alongside the separated files.
+#' Default is TRUE.
+#' @param output.format string. Format of the output files. Default is CSV.
 #' @param ... Dots. This is usually \code{...}, although other types are accepted.
 #' @importFrom data.table is.data.table
 #' @export
-KH.depart <- function(DT, departmentColumn, outputDir, writeUnivToo = TRUE, create.dir = FALSE, output.format='xlsx', ...){
+#' @examples {
+#' input_file <- system.file("extdata", "input_file.csv", package = "KHanSUtils")
+#' DT <- KH.loadCSV(input_file)
+#' KH.depart(DT, 'origin', '/tmp/xXx')
+#'
+#' }
+KH.depart <- function(DT, departingColumn, outputDir, writeWholeToo = TRUE, output.format='csv', ...){
     stopifnot(is.data.table(DT))
 
-    DT[, lapply(.SD, KH.writeCSV), by = departmentColumn]
+    if(!dir.exists(outputDir)){
+        dir.create(outputDir, showWarnings = FALSE, recursive = TRUE)
+    # }else{
+        # unlink(paste0(outputDir , '/*.', output.format))
+    }
+
+    writer <- NULL
+    if('csv' == output.format){
+        writer <- KH.writeCSV
+    }
+    if('xlsx' == output.format){
+        stop('This engine is not available yet.')
+    }
+
+    if(is.null(writer)){
+        stop('I could not find the Writer engine.')
+    }
+
+    departList <- unique(DT[[departingColumn]])
+
+    resultOK <- TRUE
+    for(dept in departList){
+        data <- DT[DT[[departingColumn]] == dept, !..departingColumn]
+        # resultOK <- resultOK & KH.writeCSV(data, paste0(outputDir, '/', dept, '.csv'))
+        resultOK <- resultOK & writer(data, paste0(outputDir, '/', dept, '.csv'))
+
+    }
+    if(!resultOK){
+        print('Something went wrong')
+        return(FALSE)
+    }
+
+    if(writeWholeToo){
+        # resultOK <- resultOK & KH.writeCSV(DT, paste0(outputDir, '/', '00-', departingColumn, '.csv'))
+        resultOK <- resultOK & writer(DT, paste0(outputDir, '/', '00-', departingColumn, '.csv'))
+    }
+
+    return(resultOK)
 }
 
-KH.writeCSV <- function(a){
-    print("_#_#_#_#")
-    print(a)
+
+#' Write data set into a CSV file
+#' @param DT data.table. Data set ready to be written.
+#' @param csv_filename string. Full URL to the CSV file.
+#' @note If the file already exists, it would be overwritten without notice.
+#' @importFrom data.table fwrite
+#' @export
+#' @examples {
+#' set.seed(1000)
+#' library(data.table)
+#' d <- data.table(
+#' group = sample(LETTERS[1:3], 10, replace = TRUE),
+#' integer = rnorm(10, 5, 1),
+#' decimal = rnorm(10, 5, 1)
+#' )
+#'
+#' KH.writeCSV(d, '/tmp/test_csv')
+#' #[1] TRUE
+#' KH.loadCSV('/tmp/test_csv')
+#' #    group  integer  decimal
+#' # 1:     A 4.614511 5.170057
+#' # 2:     C 4.524132 5.155079
+#' # 3:     A 5.719751 5.024932
+#' # 4:     C 4.981494 2.953415
+#' # 5:     B 3.626882 5.213154
+#' # 6:     A 4.017572 7.670072
+#' # 7:     C 4.445511 3.772984
+#' # 8:     B 5.121381 5.834247
+#' # 9:     A 4.879128 5.532572
+#' #10:     A 3.663959 4.353175
+#' }
+KH.writeCSV <- function(DT, csv_filename){
+    stopifnot(is.data.table(DT))
+
+    fwrite(DT, file = csv_filename)
+    return(TRUE)
 }
