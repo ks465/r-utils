@@ -33,7 +33,7 @@ options(encoding = "UTF-8")
 
 
 .onDetach <- function(libpath){
-    Db.disconnect()
+    KH.disconnect()
 
     message("KHan detached.")
 }

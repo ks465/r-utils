@@ -1,7 +1,7 @@
 # Version 0.1.0.961205
 # Version 0.1.1.970517
 
-# Revision 970812-dev
+# Revision 970823-dev
 
 
 #' Assign value to the variable.
@@ -29,6 +29,7 @@ KH.ifNull <- function(userSet, defaultSet) {
 
     return(lab)
 }
+
 
 #' Format numbers in the table so they are correct in Persian.
 #' @encoding UTF-8
@@ -92,7 +93,7 @@ KH.changeDecimal <- function(DT, columns = c()) {
     if(is.data.table(DT)){
         DT[, lapply(.SD, gsub, pattern='^([0-9]+)([.])([0-9]+)$', replacement=persianReplacement, .SD)]
     }else{
-        DT <- gsub('^([0-9]+)([.])([0-9]+)$', '\\1٫\\3', DT, perl = TRUE)
+        DT <- gsub('^([0-9]+)([.])([0-9]+)$', '\\1\u066B\\3', DT, perl = TRUE)
     }
 
     return(DT)
@@ -204,7 +205,6 @@ KH.selectByMax <- function(DT, groupBy, selectByMaxOf) {
     setorderv(DT, c(groupBy, selectByMaxOf))
     DT[, tail(.SD, 1), keyby = groupBy]
 }
-
 
 
 #' Round a data.table to different precision in various columns
@@ -424,5 +424,48 @@ KH.writeCSV <- function(DT, csv_filename){
     stopifnot(is.data.table(DT))
 
     fwrite(DT, file = csv_filename)
+    return(TRUE)
+}
+
+
+#' Write data set into a Excel 2007 (XLSX) file
+#' @param DT data.table. Data set ready to be written.
+#' @param xls_filename string. Full URL to the excel file.
+#' @note If the file already exists, it would be overwritten without notice.
+#' @import openxlsx
+#' @export
+#' @examples {
+#' set.seed(1000)
+#' library(data.table)
+#' d <- data.table(
+#' group = sample(LETTERS[1:3], 10, replace = TRUE),
+#' integer = rnorm(10, 5, 1),
+#' decimal = rnorm(10, 5, 1)
+#' )
+#'
+#' KH.writeXlsx(d, '/tmp/test_xlsx')
+#' #[1] TRUE
+#' KH.loadXlsx('/tmp/test_xlsx')
+#' #    group  integer  decimal
+#' # 1:     A 4.614511 5.170057
+#' # 2:     C 4.524132 5.155079
+#' # 3:     A 5.719751 5.024932
+#' # 4:     C 4.981494 2.953415
+#' # 5:     B 3.626882 5.213154
+#' # 6:     A 4.017572 7.670072
+#' # 7:     C 4.445511 3.772984
+#' # 8:     B 5.121381 5.834247
+#' # 9:     A 4.879128 5.532572
+#' #10:     A 3.663959 4.353175
+#' }
+KH.writeXlsx <- function(DT, xls_filename){
+    stopifnot(is.data.table(DT))
+
+    sheetID <- 'pGrad_Data'
+    wb <- createWorkbook()
+    addWorksheet(wb = wb, sheetName = sheetID)
+    writeData(wb = wb, sheet = sheetID, x = DT, rowNames = FALSE)
+    saveWorkbook(wb, xls_filename, overwrite = TRUE)
+
     return(TRUE)
 }

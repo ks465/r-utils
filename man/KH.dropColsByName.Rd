@@ -39,6 +39,6 @@ colnames(d)
 }
 \seealso{
 Other DataSets: \code{\link{KH.changeColName}},
-  \code{\link{KH.loadCSV}}
+  \code{\link{KH.loadCSV}}, \code{\link{KH.loadXlsx}}
 }
 \concept{DataSets}

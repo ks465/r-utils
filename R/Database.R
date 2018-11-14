@@ -5,6 +5,6 @@
 # Revision 970813-dev
 
 
-#' Disconnect database resource
-Db.disconnect <- function(){
+#' Disconnect from database resource
+KH.disconnect <- function(){
 }

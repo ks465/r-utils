@@ -14,6 +14,7 @@ LazyData: true
 Imports: 
     data.table (>= 1.11.8), 
     ggplot2 (>= 3.0.0),
+    openxlsx (>= 4.1.0),
     stats, 
     utils,
     methods

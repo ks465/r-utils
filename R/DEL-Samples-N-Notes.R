@@ -43,8 +43,6 @@ test_function <- function(DT, ...){
 
     assign("last.warning", NULL, envir = baseenv())
 
-    dummy <- "\\1٫\\3"
-
     DT_1 <- data.table(x=rep(c("b","a","c"),each=3), y=c(1,3,6), v=1:9)
     DT_2 <- data.table(x=rep(c("x","y","z"),each=3), y=c(2,4,7), v=11:19)
     DT <- rbind.data.frame(DT_1, DT_2)
