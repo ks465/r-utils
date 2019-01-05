@@ -54,6 +54,9 @@ Default database user to use in SQL queries. It has no default value.
 \item{\strong{db_pass}:}{character.
 Default database password to use in SQL queries. It has no default value.
 }
+\item{\strong{db_con}:}{S4
+Default database connection object.
+}
 }
 }
 

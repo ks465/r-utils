@@ -49,6 +49,9 @@
 #' \item{\strong{db_pass}:}{character.
 #' Default database password to use in SQL queries. It has no default value.
 #' }
+#' \item{\strong{db_con}:}{S4
+#' Default database connection object.
+#' }
 #' }
 
 KHanConfig <- methods::setRefClass(
@@ -64,7 +67,8 @@ KHanConfig <- methods::setRefClass(
         db_host = 'character',
         db_name = 'character',
         db_user = 'character',
-        db_pass = 'character'
+        db_pass = 'character',
+        db_con = 'S4'
     )
 )
 
@@ -95,9 +99,9 @@ KH.config <- KHanConfig$new()
 
 #' Get module configurations.
 #'
-#' @details
-#' Critical package-wide variables are saved in a module environment.
+#' @details Critical package-wide variables are saved in a module environment.
 #' This function reads a given variable from this environment only.
+#' It stops if a foreign key is requested.
 #' @family Config
 #' @keywords internals
 #' @param variable String. Name of the variable to search for.
@@ -106,14 +110,15 @@ KH.config <- KHanConfig$new()
 #' @export
 #' @examples
 #' KH.get('defaultFont')
-#' # "Nazli"
-#' KH.get('notPresentVariable', default = NA)
-#' # NA
+#' #[1] "Nazli"
 #'
 #' KH.set('defaultFont', 'B Nazanin')
 #' KH.get('defaultFont')
 #' # "B Nazanin"
 KH.get <- function(variable, default = NULL){
+    if(!hasName(KH.config, variable)){
+        stop(paste('Requested configuration field,', variable, ' does not exist.'))
+    }
     out <- KH.config[[variable]]
     if(is.null(out)){
         out <- default
@@ -122,16 +127,14 @@ KH.get <- function(variable, default = NULL){
     return(out)
 }
 
-#' Save a new value for module environment or set a function to a new closure.
-#'
-#' @details
-#' In order to change a default value or function definition, set the value using this method.
+#' Save a new value for module environment.
+#' @details In order to change a default value or function definition, set the value using this method.
+#' It stops if a foreign key is requested
 #' @family Config
-#' @note Use this only to redefine a variable. It could not be used to create a variable or function.
-#' @keywords internals
-#' @param variable String. Name of the variable or function to change.
-#' @param value Mixed. New value of the object.
-#' @return Mixed. New value of the variable.
+#' @note Use this only to redefine a variable. It could not be used to create a variable.
+#' @param variable string. Name of the variable or function to change.
+#' @param value mixed. New value of the object.
+#' @return mixed. New value of the variable.
 #' @export
 #' @examples
 #' KH.set('defaultFont', 'B Nazanin')
@@ -146,6 +149,9 @@ KH.get <- function(variable, default = NULL){
 #' # function(){print("hello")}
 #' }
 KH.set <- function(variable, value){
+    if(!hasName(KH.config, variable)){
+        stop(paste('Requested configuration field,', variable, ' does not exist.'))
+    }
     KH.config[[variable]] <- value
 
     return(KH.get(variable))

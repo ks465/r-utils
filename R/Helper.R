@@ -1,7 +1,8 @@
 # Version 0.1.0.961205
 # Version 0.1.1.970517
+# Version 0.2.0.971015
 
-# Revision 970823-dev
+# Revision 971015-dev
 
 
 #' Assign value to the variable.
@@ -325,7 +326,7 @@ KH.roundAll <- function(DT, integerList = NULL, decimalList = NULL, decimal = KH
 }
 
 
-#' Separate data set into separated output for each department
+#' Separate data set into multiple output files for each departing item
 #' @details After separating data based on the given column, each part is written to a separate file
 #' in the given directory. If the directory does not exist, it will be created. If the directory exists
 #' and contains data, they will be overwritten without notice.
@@ -337,14 +338,17 @@ KH.roundAll <- function(DT, integerList = NULL, decimalList = NULL, decimal = KH
 #' @param writeWholeToo logical. If TRUE write whole data set into a file alongside the separated files.
 #' Default is TRUE.
 #' @param output.format string. Format of the output files. Default is CSV.
+#' Possible values are \code{csv} and \code{xlsx}
 #' @param ... Dots. This is usually \code{...}, although other types are accepted.
 #' @importFrom data.table is.data.table
 #' @export
 #' @examples {
 #' input_file <- system.file("extdata", "input_file.csv", package = "KHanSUtils")
 #' DT <- KH.loadCSV(input_file)
-#' KH.depart(DT, 'origin', '/tmp/xXx')
-#'
+#' KH.depart(DT, 'origin', '/tmp/test-csv')
+#' #[1] TRUE
+#' KH.depart(DT, 'origin', '/tmp/test-xlsx', output.format = 'xlsx')
+#' #[1] TRUE
 #' }
 KH.depart <- function(DT, departingColumn, outputDir, writeWholeToo = TRUE, output.format='csv', ...){
     stopifnot(is.data.table(DT))
@@ -360,7 +364,7 @@ KH.depart <- function(DT, departingColumn, outputDir, writeWholeToo = TRUE, outp
         writer <- KH.writeCSV
     }
     if('xlsx' == output.format){
-        stop('This engine is not available yet.')
+        writer <- KH.writeXlsx
     }
 
     if(is.null(writer)){
@@ -372,8 +376,7 @@ KH.depart <- function(DT, departingColumn, outputDir, writeWholeToo = TRUE, outp
     resultOK <- TRUE
     for(dept in departList){
         data <- DT[DT[[departingColumn]] == dept, !..departingColumn]
-        # resultOK <- resultOK & KH.writeCSV(data, paste0(outputDir, '/', dept, '.csv'))
-        resultOK <- resultOK & writer(data, paste0(outputDir, '/', dept, '.csv'))
+        resultOK <- resultOK & writer(data, paste0(outputDir, '/', dept, '.', output.format))
 
     }
     if(!resultOK){
@@ -382,8 +385,7 @@ KH.depart <- function(DT, departingColumn, outputDir, writeWholeToo = TRUE, outp
     }
 
     if(writeWholeToo){
-        # resultOK <- resultOK & KH.writeCSV(DT, paste0(outputDir, '/', '00-', departingColumn, '.csv'))
-        resultOK <- resultOK & writer(DT, paste0(outputDir, '/', '00-', departingColumn, '.csv'))
+        resultOK <- resultOK & writer(DT, paste0(outputDir, '/', '00-', departingColumn, '.', output.format))
     }
 
     return(resultOK)
@@ -423,8 +425,12 @@ KH.depart <- function(DT, departingColumn, outputDir, writeWholeToo = TRUE, outp
 KH.writeCSV <- function(DT, csv_filename){
     stopifnot(is.data.table(DT))
 
-    fwrite(DT, file = csv_filename)
-    return(TRUE)
+    x <- try(fwrite(DT, file = csv_filename), silent = TRUE)
+    if(is.null(x)){
+        return(TRUE)
+    }
+    stop(x)
+    return(FALSE)
 }
 
 

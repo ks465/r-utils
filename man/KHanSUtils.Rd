@@ -7,6 +7,8 @@
 \title{KHanSUtils: KHan R Programming Utilities}
 \description{
 A series of files containing everyday-used methods and data structures.
+    This is the true successor of the KHanPgrad package. This is a more general package, 
+    which does not contain any domain specific tools.
 }
 \details{
 The only function you're likely to need from roxygen2 is [roxygenize()].

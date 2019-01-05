@@ -2,10 +2,28 @@
 % Please edit documentation in R/Database.R
 \name{KH.disconnect}
 \alias{KH.disconnect}
-\title{Disconnect from database resource}
+\title{Disconnect database resource}
 \usage{
 KH.disconnect()
 }
-\description{
-Disconnect from database resource
+\value{
+boolean. Result of calling database \code{\link[=DBI]{dbDisconnect}}.
 }
+\description{
+Disconnect database resource
+}
+\details{
+Generic function for disconnecting active database rewource.
+}
+\examples{
+KH.disconnect()
+# [1] TRUE
+}
+\seealso{
+Other Database: \code{\link{KH.connect}},
+  \code{\link{KH.existsTable}}, \code{\link{KH.readAll}},
+  \code{\link{KH.readSQLFile}}, \code{\link{KH.readSQL}},
+  \code{\link{KH.sendSQLString}},
+  \code{\link{KH.writeTable}}
+}
+\concept{Database}

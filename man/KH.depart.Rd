@@ -2,7 +2,7 @@
 % Please edit documentation in R/Helper.R
 \name{KH.depart}
 \alias{KH.depart}
-\title{Separate data set into separated output for each department}
+\title{Separate data set into multiple output files for each departing item}
 \usage{
 KH.depart(DT, departingColumn, outputDir, writeWholeToo = TRUE,
   output.format = "csv", ...)
@@ -19,12 +19,13 @@ Data inside the directory will be overwritten without notice.}
 \item{writeWholeToo}{logical. If TRUE write whole data set into a file alongside the separated files.
 Default is TRUE.}
 
-\item{output.format}{string. Format of the output files. Default is CSV.}
+\item{output.format}{string. Format of the output files. Default is CSV.
+Possible values are \code{csv} and \code{xlsx}}
 
 \item{...}{Dots. This is usually \code{...}, although other types are accepted.}
 }
 \description{
-Separate data set into separated output for each department
+Separate data set into multiple output files for each departing item
 }
 \details{
 After separating data based on the given column, each part is written to a separate file
@@ -35,7 +36,9 @@ and contains data, they will be overwritten without notice.
 {
 input_file <- system.file("extdata", "input_file.csv", package = "KHanSUtils")
 DT <- KH.loadCSV(input_file)
-KH.depart(DT, 'origin', '/tmp/xXx')
-
+KH.depart(DT, 'origin', '/tmp/test-csv')
+#[1] TRUE
+KH.depart(DT, 'origin', '/tmp/test-xlsx', output.format = 'xlsx')
+#[1] TRUE
 }
 }

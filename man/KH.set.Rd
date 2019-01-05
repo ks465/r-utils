@@ -2,26 +2,27 @@
 % Please edit documentation in R/Config.R
 \name{KH.set}
 \alias{KH.set}
-\title{Save a new value for module environment or set a function to a new closure.}
+\title{Save a new value for module environment.}
 \usage{
 KH.set(variable, value)
 }
 \arguments{
-\item{variable}{String. Name of the variable or function to change.}
+\item{variable}{string. Name of the variable or function to change.}
 
-\item{value}{Mixed. New value of the object.}
+\item{value}{mixed. New value of the object.}
 }
 \value{
-Mixed. New value of the variable.
+mixed. New value of the variable.
 }
 \description{
-Save a new value for module environment or set a function to a new closure.
+Save a new value for module environment.
 }
 \details{
 In order to change a default value or function definition, set the value using this method.
+It stops if a foreign key is requested
 }
 \note{
-Use this only to redefine a variable. It could not be used to create a variable or function.
+Use this only to redefine a variable. It could not be used to create a variable.
 }
 \examples{
 KH.set('defaultFont', 'B Nazanin')
@@ -41,4 +42,3 @@ Other Config: \code{\link{Configuration}},
   \code{\link{KH.get}}
 }
 \concept{Config}
-\keyword{internals}

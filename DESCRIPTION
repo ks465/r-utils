@@ -6,6 +6,8 @@ Date: 2018-11-03-970812
 Author: Keyhan Sedaghat <keyhansedaghat@netscape.net>
 Maintainer: Keyhan Sedaghat <keyhansedaghat@netscape.net>
 Description: A series of files containing everyday-used methods and data structures.
+    This is the true successor of the KHanPgrad package. This is a more general package, 
+    which does not contain any domain specific tools.
 Encoding: UTF-8
 License: file LICENSE
 RoxygenNote: 6.1.0
@@ -17,4 +19,5 @@ Imports:
     openxlsx (>= 4.1.0),
     stats, 
     utils,
-    methods
+    methods,
+    RMariaDB

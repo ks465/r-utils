@@ -20,12 +20,11 @@ Get module configurations.
 \details{
 Critical package-wide variables are saved in a module environment.
 This function reads a given variable from this environment only.
+It stops if a foreign key is requested.
 }
 \examples{
 KH.get('defaultFont')
-# "Nazli"
-KH.get('notPresentVariable', default = NA)
-# NA
+#[1] "Nazli"
 
 KH.set('defaultFont', 'B Nazanin')
 KH.get('defaultFont')
