@@ -1,0 +1,213 @@
+# Version 0.1.0.971015
+
+# Revision 971015-dev
+
+
+# Enable Persian content
+Sys.setenv("NLS_LANG" = '.UTF8')
+
+
+#' Create a database connection object using Oracle DBMS.
+#' @seealso \code{\link[=DBI]{dbConnect}} \code{\link{Database}}
+#' @details Connect to a database and set \code{\link{con_obj}} in the object itself.
+#' @note Oci connection is specially design to connect to AUT pGrad Portal. It will not function
+#' well in other environments.
+#' @param db_name string. Name of the database to load.
+#' @param db_user string. User identification for the DBMS.
+#' @param db_pass string. Password identifying the user.
+#' @param db_host string. Name of the server hosting the database.
+#' @param db_port integer. Port the server is listening.
+#' @return Oci, an S3 object of type Oci containing the required parameter to act as
+#' an interface to ROracle.
+#' @import ROracle
+#' @importFrom DBI dbConnect
+#' @export
+#' @examples
+#' \dontrun{
+#'con <- Oci(db_host = 'localhost', db_name = 'test', db_user = 'root', db_pass = '123456')
+#'con
+#' #$db_host
+#' #[1] "localhost"
+#'
+#' #$db_port
+#' #[1] "1521"
+#'
+#' #$db_name
+#' #[1] "test"
+#'
+#' #$db_user
+#' #[1] "root"
+#'
+#' #$db_pass
+#' #[1] "123456"
+#'
+#' #$con_str
+#' #[1] "(DESCRIPTION=(ADDRESS_LIST =(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SID=test)))"
+#'
+#' #$con_obj
+#' #User name:             root
+#' #Connect string:        (DESCRIPTION=(ADDRESS_LIST =(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SID=test)))
+#' #Server version:        11.2.0.4.0
+#' #Server type:           Oracle RDBMS
+#' #Results processed:     0
+#' #OCI prefetch:          FALSE
+#' #Bulk read:             1000
+#' #Bulk write:            1000
+#' #Statement cache size:  0
+#' #Open results:          0
+#'
+#' #attr(,"class")
+#' #[1] "Oci"
+#' }
+Oci <- function(db_name, db_user, db_pass, db_host, db_port = 1521){
+    con_str <- paste(
+        "(DESCRIPTION=",
+        "(ADDRESS_LIST =",
+        "(ADDRESS=(PROTOCOL=TCP)(HOST=", db_host, ")(PORT=", db_port, ")))",
+        "(CONNECT_DATA=(SID=", db_name, ")))", sep = "")
+    value <- list(
+        db_host = db_host,
+        db_port = db_port,
+        db_name = db_name,
+        db_user = db_user,
+        db_pass = db_pass,
+        con_str = con_str,
+        con_obj = DBI::dbConnect(ROracle::Oracle(),
+                                 user = db_user,
+                                 password = db_pass,
+                                 dbname = con_str
+        )
+    )
+    # class can be set using class() or attr() function
+    attr(value, "class") <- "Oci"
+    value
+}
+
+
+#' Test relationship between an object and DB object class
+#' @seealso \code{\link{is}}
+#' @details Check to see if the given object has the class \code{Oci}.
+#' @param obj object. One of the four defined database connections.
+#' @return boolean.
+#' @export
+#' @examples
+#' \dontrun{
+#' s1 <- Oci(db_host = '127.0.0.1', db_pass = '123456', db_name = 'test', db_user = 'root')
+#' is.Oci(s1)
+#' #[1] TRUE
+#'
+#' s2 <- list(db_host = '127.0.0.1', db_pass = '123456', db_name = 'test', db_user = 'root')
+#' is.Oci(s2)
+#' #[1] FALSE
+#' }
+is.Oci <- function(obj){
+    return(attr(obj, 'class') == 'Oci')
+}
+
+
+#'
+#' @family Database
+#' @seealso  listTables.default
+listTables.Oci <- function(obj){
+    if(!is.Oci(obj)){
+        message('Connection object is not set. Nothing to do.')
+        return(FALSE)
+    }
+    if(!is(obj$con_obj, 'DBIConnection')){
+        message('Connection object is corrupted. Nothing to do.')
+        return(FALSE)
+    }
+    tList <- dbGetQuery(obj$con_obj,
+                        "select VIEW_NAME from ALL_VIEWS where VIEW_NAME like 'V_PGR_%'")
+    return(sub('V_', '', tList$VIEW_NAME))
+}
+
+
+#'
+#' @family Database
+#' @seealso  disconnect.default
+#' @importFrom methods is
+disconnect.Oci <- function(obj){
+    if(!is.Oci(obj)){
+        message('Connection object is not set. Nothing to do.')
+        return(FALSE)
+    }
+    if(!is(obj$con_obj, 'DBIConnection')){
+        message('Connection object is corrupted. Nothing to do.')
+        return(FALSE)
+    }
+    w <- getOption('warn')
+    options(warn = -1);
+    dummy <- dbDisconnect(obj$con_obj)
+    options(warn = w);
+    obj$con_obj <- "NULL"
+    attr(obj, "class") <- "NULL"
+
+    return(dummy)
+}
+
+
+#'
+#' @family Database
+#' @seealso  existsTable.default
+existsTable.Oci <- function(obj, name){
+    if(!is.Oci(obj)){
+        message('Connection object is not set. Nothing to do.')
+        return(FALSE)
+    }
+    if(!is(obj$con_obj, 'DBIConnection')){
+        message('Connection object is corrupted. Nothing to do.')
+        return(FALSE)
+    }
+
+    return(name %in% listTables(obj))
+}
+
+
+#'
+#' @family Database
+#' @seealso  writeTable.default
+writeTable.Oci <- function(obj, DT, tableName){
+    stop('This Oci implementation is read-only!')
+
+    return(FALSE)
+}
+
+
+#'
+#' @family Database
+#' @seealso  readSQL.default
+readSQL.Oci <- function (obj, sqlString, key = NULL) {
+    if(!is.Oci(obj)){
+        message('Connection object is not set. Nothing to do.')
+        return(FALSE)
+    }
+    if(!is(obj$con_obj, 'DBIConnection')){
+        message('Connection object is corrupted. Nothing to do.')
+        return(FALSE)
+    }
+
+    DT <- setDT(dbGetQuery(obj$con_obj, sqlString), keep.rownames = FALSE, key = key, check.names = FALSE)
+
+    return(DT)
+}
+
+
+#'
+#' @family Database
+#' @seealso  readAll.default
+readAll.Oci <- function(obj, tableName){
+    return(readSQL(obj, paste('SELECT * FROM', tableName)))
+}
+
+
+#'
+#' @family Database
+#' @seealso  readSQLFile.default
+readSQLFile.Oci <- function (obj, sqlFile) {
+    sqlString <- readLines(sqlFile)
+    sqlString <- paste0(sqlString, collapse = ' ')
+    DT <- readSQL(obj, sqlString)
+
+    return(DT)
+}

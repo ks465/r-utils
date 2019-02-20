@@ -39,27 +39,6 @@ eMail of the package author.
 }
 }
 
-\section{Database}{
-
-\describe{
-\item{\strong{db_host}:}{character.
-Default database host to use in SQL queries. Defaults to "localhost"
-}
-\item{\strong{db_name}:}{character.
-Default database to use in SQL queries. Defaults to ""
-}
-\item{\strong{db_user}:}{character.
-Default database user to use in SQL queries. It has no default value.
-}
-\item{\strong{db_pass}:}{character.
-Default database password to use in SQL queries. It has no default value.
-}
-\item{\strong{db_con}:}{S4
-Default database connection object.
-}
-}
-}
-
 \seealso{
 Other Config: \code{\link{KH.get}}, \code{\link{KH.set}}
 }

@@ -3,7 +3,8 @@
 # Revision 970812-dev
 
 options(encoding = "UTF-8")
-
+Sys.setlocale("LC_CTYPE", "fa_IR.utf8")
+Sys.setenv("LC_ALL" = "UTF-8")
 
 # library(methods, quietly = TRUE)
 # library(stats, quietly = TRUE)
@@ -33,7 +34,7 @@ options(encoding = "UTF-8")
 
 
 .onDetach <- function(libpath){
-    KH.disconnect()
+    # KH.disconnect()
 
     message("KHan detached.")
 }

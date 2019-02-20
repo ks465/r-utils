@@ -2,201 +2,134 @@
 # Version 0.2.1.970502
 # Version 0.2.1.970516
 # Version 0.3.0.971015
+# Version 0.4.0.971127
 
-# Revision 971015-dev
+# Revision 971127-dev
 
-
-#' Connect to a selected database.
 #' @family Database
-#' @seealso \code{\link[=DBI]{dbConnect}} \code{\link{Maria.connect}}
-#' @details
-#' Connect to a database and set \code{\link{db_con}} package configuration to the returned connection object.
-#' There is only one connection object for this package. So only one type of database could be used.
-#' @return object, an S4 object that inherits from DBIConnection.
-#' This object is used to communicate with the database engine.
-#' @import RMariaDB
-#' @export
-#' @examples
-#' KH.set('db_name', 'stats_center_4')
-#' KH.set('db_user', 'root')
-#' KH.set('db_pass', '123456')
-#' KH.set('db_host', '127.0.0.1')
-#' KH.connect()
-#' # [1] TRUE
-KH.connect <- function() {
-    if(is.null(KH.get('db_con'))){
-        KH.set('db_con',
-            DBI::dbConnect(RMariaDB::MariaDB(),
-                user = KH.get('db_user'),
-                password = KH.get('db_pass'),
-                host = KH.get('db_host'),
-                dbname = KH.get('db_name')
-            )
-        )
-    }
+#' @seealso  disconnect.default
+#' @importFrom methods is
+disconnect <- function(obj) {UseMethod("disconnect")}
 
-    return(KH.get('db_con'))
-}
+
+#' @family Database
+#' @seealso  listTables.default
+listTables <- function(obj) {UseMethod("listTables")}
+
+
+#' @family Database
+#' @seealso  existsTable.default
+existsTable <- function(obj, name) {UseMethod("existsTable")}
+
+
+#' @family Database
+#' @seealso  writeTable.default
+writeTable <- function(obj, DT, tableName) {UseMethod("writeTable")}
+
+
+#' @family Database
+#' @seealso  sendSQLString.default
+sendSQLString <- function(obj, sqlString) {UseMethod("sendSQLString")}
+
+
+#' @family Database
+#' @seealso  readSQL.default
+readSQL <- function(obj, sqlString, key) {UseMethod("readSQL")}
+
+
+#' @family Database
+#' @seealso  readAll.default
+readAll <- function(obj, tableName) {UseMethod("readAll")}
+
+
+#' @family Database
+#' @seealso  readSQLFile.default
+readSQLFile <- function(obj, sqlFile) {UseMethod("readSQLFile")}
 
 
 #' Disconnect database resource
 #' @family Database
-#' @details Generic function for disconnecting active database rewource.
+#' @aliases disconnect.Maria disconnect.Oracle disconnect.Postgre disconnect.Sqlite
+#' @details Generic function for disconnecting active database resource
+#' @param obj object. One of the four defined database connections.
 #' @return boolean. Result of calling database \code{\link[=DBI]{dbDisconnect}}.
 #' @export
-#' @examples
-#' KH.disconnect()
-#' # [1] TRUE
-KH.disconnect <- function(){
-    KH.con <- KH.get('db_con')
-    if(is.null(KH.con)){
-        message('Connection object is not set. Nothing to do.')
-        return(FALSE)
-    }
-    if(!is(KH.con, 'DBIConnection')){
-        message('Connection object is corrupted. Nothing to do.')
-        return(FALSE)
-    }
-    w <- getOption('warn')
-    options(warn = -1);
-    dummy <- dbDisconnect(KH.con)
-    options(warn = w);
-    KH.set('db_con', NULL)
-
-    return(TRUE)
-}
+disconnect.default <- function(obj) {stop("This is a generic function. You should not get here. Check your code.\n")}
 
 
-#' Check Existance of a table and optionally check if it is empty
+#' List tables in the database
 #' @family Database
-#' @details Check for existence of th given table. If it is found and contains any records.
-#' If \code{populated} is set to \code{TRUE}, and the table is empty, the result would be \code{FALSE}.
-#' @param collectionName string. Name of table
-#' @param populated boolean. Check for records.
+#' @aliases listTables.Maria listTables.Oracle listTables.Postgre listTables.Sqlite
+#' @details Generic function for getting list of tables in active database resource
+#' @param obj object. One of the four defined database connections.
+#' @return boolean. Result of calling database \code{\link[=DBI]{dblistTables}}.
 #' @export
-#' @return boolean.
-KH.existsTable <- function(collectionName, populated = FALSE){
-    result <- KH.readSQL(
-        paste0('SELECT ', '* ', 'FROM `information_schema`.`tables` ',
-               'WHERE `table_schema` = "', KH.get('db_name'),
-               '" AND `table_name` = "', collectionName, '" LIMIT 1;'
-        )
-    )
-    if(0 == nrow(result)){
-        return(FALSE)
-    }
-    if(!populated){
-        return(TRUE)
-    }
-    result <- Db.readSQL(paste0('SELECT COUNT(*) FROM `', collectionName, '`;'))
-    if(0 == nrow(result)){
-        return(FALSE)
-    }
+listTables.default <- function(obj) {stop("This is a generic function. You should not get here. Check your code.\n")}
 
-    return(TRUE)
-}
+
+#' Check Existance of a table
+#' @family Database
+#' @aliases existsTable.Maria existsTable.Oracle existsTable.Postgre existsTable.Sqlite
+#' @details Checks if a table with the given name is present in connected database.
+#' @param obj object. One of the four defined database connections.
+#' @param name character. Name of the table for search.
+#' @return boolean.
+#' @export
+existsTable.default <- function(obj, name) {stop("This is a generic function. You should not get here. Check your code.\n")}
 
 
 #' Write and append data to the table.
 #' @family Database
+#' @aliases writeTable.Maria writeTable.Oracle writeTable.Postgre writeTable.Sqlite
 #' @details Write a data.table to the table in chunks. Chunking the data frame is done for avoiding database
 #' queue overflow.
+#' @param obj object. One of the four defined database connections.
 #' @param DT data.table Dataset ready to save in the database.
 #' @param tableName string. Name of table.
-#' @param field.types list. Named list of field types
 #' @return boolean. Result of saving.
 #' @export
-#' @examples
-#' @do
-#' \dontrun{
-#' dt <- KH.loadCSV("/var/www/html/stats45/update/oci_csv/department.csv")
-#' KH.writeTable(dt, 'dept')
-#' }
-KH.writeTable <- function(DT, tableName, field.types = NULL){
-    stopifnot(is.data.table(DT))
-
-    dbBegin(KH.get('db_con'))
-
-    dummy <- dbSendQuery(KH.get('db_con'), paste0('TRUNCATE TABLE `', tableName, '`;'))
-    dummy <- dbWriteTable(KH.get('db_con'), tableName, DT,
-                          row.names = FALSE, overwrite = FALSE, field.types = field.types)
-
-    if(!dbCommit(KH.get('db_con'))){
-        message(paste('Failed to commit', tableName, '!'))
-
-        return(FALSE)
-    }
-
-    return(TRUE)
-}
+writeTable.default <- function(obj, DT, tableName) {stop("This is a generic function. You should not get here. Check your code.\n")}
 
 
 #' Send sequel from a string
 #' @family Database
 #' @details Execute queries without result sets on the server.
+#' @param obj object. One of the four defined database connections.
 #' @param sqlString string. Complete SQL string.
 #' @return boolean. Result of execution.
 #' @export
-#' @examples
-#' \dontrun{
-#' KH.sendSQLString(paste0('TRUNCATE TABLE `a_table`;'))
-#' }
-KH.sendSQLString <- function (sqlString) {
-    dta <- dbSendQuery(KH.get('db_con'), sqlString)
-    dbClearResult(dta)
-
-    return(TRUE)
-}
+sendSQLString.default <- function(obj, sqlString) {stop("This is a generic function. You should not get here. Check your code.\n")}
 
 
 #' Read sequel from string and return the data
 #' @family Database
-#' @details Send SQL to the databse server and read the data as a data.table. Presumably the SQL string is
-#' quoted in MariaDB standards (i.e.: using back quotes).
+#' @details Send SQL to the databse server and read the data as a data.table.
+#' @param obj object. One of the four defined database connections.
 #' @param sqlString string. Complete SQL string.
 #' @param key Optional key column(s).
 #' @return data.table. Curser result set from server.
+#' @import data.table
 #' @export
-#' @examples
-#' KH.connect()
-#' KH.readSQL('SELECT * FROM oci_departments LIMIT 1;', key = c('department_id'))
-#' # department_id              title short_name campus ruling_department
-#' # 1            10 معارف وعلوم انسانی      معارف   سایر                 0
-#' KH.disconnect()
-#' # [1] TRUE
-KH.readSQL <- function (sqlString, key = NULL) {
-    DT <- dbGetQuery(KH.get('db_con'), sqlString)
-    DT <- setDT(DT, keep.rownames = FALSE, key = key, check.names=FALSE)
-
-    return(DT)
-}
+readSQL.default <- function(obj, sqlString, key) {stop("This is a generic function. You should not get here. Check your code.\n")}
 
 
 #' Read all the rows and columns in the given table.
 #' @family Database
-#' @seealso \code{\link{KH.readSQL}}
-#' @details #' Read all of rows in the given table containing all the columns in the result set.
-#' @param collectionName String. Name of a table in the database.
+#' @details Read all of rows in the given table containing all the columns in the result set.
+#' @param obj object. One of the four defined database connections.
+#' @param tableName String. Name of a table in the database.
 #' @return data.table Curser result set from server.
-#' For example see \code{\link{Db.readSQL}}
-KH.readAll <- function(collectionName){
-    return(KH.readSQL(paste('SELECT * FROM', collectionName)))
-}
+#' @import data.table
+#' @export
+readAll.default <- function(obj, tableName) {stop("This is a generic function. You should not get here. Check your code.\n")}
 
 
 #' Read sequel from a file and return the data
 #' @family Database
-#' @seealso \code{\link{KH.readSQL}}
 #' @details Send SQL saved in a file to the databse server and read the data as a data.table.
-#' Presumably the SQL string is quoted in MariaDB standards (i.e.: using back quotes).
-#' For example see \code{\link{KH.readSQL}}
+#' @param obj object. One of the four defined database connections.
 #' @param sqlFile string. Full name of a text file containg a valid SQL query.
 #' @return data.table Curser result set from server.
-#' For example see \code{\link{Db.readSQL}}
-KH.readSQLFile <- function (sqlFile) {
-    sqlString <- readLines(sqlFile)
-    sqlString <- paste0(sqlString, collapse = ' ')
-    DT <- KH.readSQL(sqlString)
-
-    return(DT)
-}
+#' @import data.table
+#' @export
+readSQLFile.default <- function(obj, sqlFile) {stop("This is a generic function. You should not get here. Check your code.\n")}

@@ -1,6 +1,7 @@
 # Version 0.1.0.970814
+# Version 0.2.0.971127
 
-# Revision 970814-dev
+# Revision 971127-dev
 
 
 #' List of all the configuration settings in this application, which are adjustable by the user.
@@ -35,25 +36,6 @@
 #' }
 #' }
 
-#' @section Database:
-#' \describe{
-#' \item{\strong{db_host}:}{character.
-#' Default database host to use in SQL queries. Defaults to "localhost"
-#' }
-#' \item{\strong{db_name}:}{character.
-#' Default database to use in SQL queries. Defaults to ""
-#' }
-#' \item{\strong{db_user}:}{character.
-#' Default database user to use in SQL queries. It has no default value.
-#' }
-#' \item{\strong{db_pass}:}{character.
-#' Default database password to use in SQL queries. It has no default value.
-#' }
-#' \item{\strong{db_con}:}{S4
-#' Default database connection object.
-#' }
-#' }
-
 KHanConfig <- methods::setRefClass(
     "KHanConfig",
     fields = list(
@@ -63,12 +45,7 @@ KHanConfig <- methods::setRefClass(
         decimal = 'integer',
         workingDirectory = 'character',
         authorName = 'character',
-        authorEmail = 'character',
-        db_host = 'character',
-        db_name = 'character',
-        db_user = 'character',
-        db_pass = 'character',
-        db_con = 'S4'
+        authorEmail = 'character'
     )
 )
 
@@ -83,10 +60,6 @@ KHanConfig$methods(
         workingDirectory <<- ''
         authorName <<- 'Keyhan Sedaghat'
         authorEmail <<- 'keyhansedaghat@aut.ac.ir'
-        db_host <<- 'localhost'
-        db_name <<- ''
-        db_user <<- ''
-        db_pass <<- ''
     }
 )
 

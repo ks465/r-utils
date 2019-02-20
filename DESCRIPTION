@@ -1,8 +1,8 @@
 Package: KHanSUtils
 Type: Package
 Title: A Collection of Wrappers for Frequently Used Codes
-Version: 0.2.01-970812
-Date: 2018-11-03-970812
+Version: 0.3.25-971201
+Date: 2019-02-20-971201
 Author: Keyhan Sedaghat <keyhansedaghat@netscape.net>
 Maintainer: Keyhan Sedaghat <keyhansedaghat@netscape.net>
 Description: A series of files containing everyday-used methods and data structures.
@@ -10,7 +10,7 @@ Description: A series of files containing everyday-used methods and data structu
     which does not contain any domain specific tools.
 Encoding: UTF-8
 License: file LICENSE
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Depends: R(>= 3.4.0)
 LazyData: true
 Imports: 
@@ -20,4 +20,7 @@ Imports:
     stats, 
     utils,
     methods,
-    RMariaDB
+    DBI,
+    RMariaDB,
+    RPostgreSQL,
+    RSQLite
